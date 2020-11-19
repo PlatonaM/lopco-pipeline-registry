@@ -1,3 +1,57 @@
+### Pipeline Data Structure
+
+{
+    "name": <string>,
+    "stages": {
+        "0": {
+            "worker": {
+                "id": <string>,
+                "name": <string>,
+                "image": <string>,
+                "data_cache_path": <string>,
+                "description": <string>,
+                "configs": {
+                    <string>: <string>,
+                    ...
+                },
+                "input": {
+                    "type": <string>("single" / "multiple"),
+                    "fields": [
+                        {
+                            "name": <string>,
+                            "media_type": <string>,
+                            "is_file": <boolean>
+                        },
+                        ...
+                    ]
+                },
+                "output": {
+                    "type": <string>("single" / "multiple"),
+                    "fields": [
+                        {
+                            "name": <string>,
+                            "media_type": <string>,
+                            "is_file": <boolean>
+                        },
+                        ...
+                    ]
+                }
+            },
+            "description": <string>,
+            "input_map": {
+                <string>: <string>,
+                ...
+            }
+        },
+        "1": {
+            ...
+        },
+        ...
+    }
+}
+
+### API
+
 #### /pipelines
 
 **GET**
