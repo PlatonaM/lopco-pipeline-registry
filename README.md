@@ -2,14 +2,14 @@
 
 **GET**
 
-_List pipeline IDs._
+_List pipelines._
 
     # Example
 
-    curl http://host:8000/pipeline-registry/pipelines
-    [
-        "783c1c1f-7680-4420-8a0c-9e00752ee22b"
-    ]
+    curl http://<host>/pipelines
+    {
+        "677f99d4-2ec7-450c-add2-8b7c5f7f171c": "{\"name\": \"No upload test\", \"stages\": {\"0\": {\"worker\": {\"name\": \"XLSX to CSV\", \"image\": \"platonam/lopco-xlsx-to-csv-worker:dev\", \"data_cache_path\": \"/data_cache\", \"description\": \"Convert a Microsoft Excel Open XML Spreadsheet file to Comma-Separated Values.\", \"configs\": {\"delimiter\": \";\"}, \"input\": {\"type\": \"single\", \"fields\": [{\"name\": \"xlsx_file\", \"media_type\": \"application/vnd.ms-excel\", \"is_file\": true}]}, \"output\": {\"type\": \"single\", \"fields\": [{\"name\": \"csv_file\", \"media_type\": \"text/csv\", \"is_file\": true}, {\"name\": \"line_count\", \"media_type\": \"text/plain\", \"is_file\": false}]}, \"id\": \"1567e155-51c6-4f0b-a898-842c737f1b34\"}, \"description\": \"\", \"input_map\": {\"xlsx_file\": \"init_source\"}}, \"1\": {\"worker\": {\"name\": \"Trim CSV\", \"image\": \"platonam/lopco-trim-csv-worker:dev\", \"data_cache_path\": \"/data_cache\", \"description\": \"Trim a column from a Comma-Separated Values file.\", \"configs\": {\"delimiter\": \";\", \"column_num\": \"2\"}, \"input\": {\"type\": \"single\", \"fields\": [{\"name\": \"input_csv\", \"media_type\": \"text/csv\", \"is_file\": true}]}, \"output\": {\"type\": \"single\", \"fields\": [{\"name\": \"output_csv\", \"media_type\": \"text/csv\", \"is_file\": true}, {\"name\": \"line_count\", \"media_type\": \"text/plain\", \"is_file\": false}]}, \"id\": \"04e6b617-fff1-41bb-a50c-8c2a2c0413e5\"}, \"description\": \"\", \"input_map\": {\"input_csv\": \"csv_file\"}}, \"2\": {\"worker\": {\"name\": \"Split CSV\", \"image\": \"platonam/lopco-split-csv-worker:dev\", \"data_cache_path\": \"/data_cache\", \"description\": \"Split a Comma-Separated Values file into multiple unique files.\", \"configs\": {\"column\": \"sensor\", \"delimiter\": \";\"}, \"input\": {\"type\": \"single\", \"fields\": [{\"name\": \"source_table\", \"media_type\": \"text/csv\", \"is_file\": true}]}, \"output\": {\"type\": \"multiple\", \"fields\": [{\"name\": \"unique_id\", \"media_type\": \"text/plain\", \"is_file\": false}, {\"name\": \"result_table\", \"media_type\": \"text/csv\", \"is_file\": true}, {\"name\": \"line_count\", \"media_type\": \"text/plain\", \"is_file\": false}]}, \"id\": \"004894dc-bb03-4649-92c4-6b184c30c594\"}, \"description\": \"\", \"input_map\": {\"source_table\": \"output_csv\"}}}}"
+    }
 
 **POST**
 
@@ -19,16 +19,17 @@ _Add new pipeline._
 
     cat pipeline_data.json
     {
-        "name": "Test Pipeline 2",
-        "stages": [
-            {
-                "id": "01",
+        "name": "Demo Pipeline",
+        "stages": {
+            "0": {
                 "worker": {
-                    "id": "1567e155-51c6-4f0b-a898-842c737f1b34",
-                    "name": "Convert xlsx to csv",
-                    "description": null,
-                    "image": "xlsx-to-csv-worker",
+                    "name": "XLSX to CSV",
+                    "image": "platonam/lopco-xlsx-to-csv-worker:dev",
                     "data_cache_path": "/data_cache",
+                    "description": "Convert a Microsoft Excel Open XML Spreadsheet file to Comma-Separated Values.",
+                    "configs": {
+                        "delimiter": ";"
+                    },
                     "input": {
                         "type": "single",
                         "fields": [
@@ -46,25 +47,31 @@ _Add new pipeline._
                                 "name": "csv_file",
                                 "media_type": "text/csv",
                                 "is_file": true
+                            },
+                            {
+                                "name": "line_count",
+                                "media_type": "text/plain",
+                                "is_file": false
                             }
                         ]
                     },
-                    "configs": {
-                        "delimiter": ";"
-                    }
+                    "id": "1567e155-51c6-4f0b-a898-842c737f1b34"
                 },
+                "description": "",
                 "input_map": {
                     "xlsx_file": "init_source"
                 }
             },
-            {
-                "id": "02",
+            "1": {
                 "worker": {
-                    "id": "04e6b617-fff1-41bb-a50c-8c2a2c0413e5",
-                    "name": "Trim column from csv",
-                    "description": null,
-                    "image": "trim-csv-worker",
+                    "name": "Trim CSV",
+                    "image": "platonam/lopco-trim-csv-worker:dev",
                     "data_cache_path": "/data_cache",
+                    "description": "Trim a column from a Comma-Separated Values file.",
+                    "configs": {
+                        "delimiter": ";",
+                        "column_num": "2"
+                    },
                     "input": {
                         "type": "single",
                         "fields": [
@@ -82,26 +89,31 @@ _Add new pipeline._
                                 "name": "output_csv",
                                 "media_type": "text/csv",
                                 "is_file": true
+                            },
+                            {
+                                "name": "line_count",
+                                "media_type": "text/plain",
+                                "is_file": false
                             }
                         ]
                     },
-                    "configs": {
-                        "delimiter": ";",
-                        "column_num": 2
-                    }
+                    "id": "04e6b617-fff1-41bb-a50c-8c2a2c0413e5"
                 },
+                "description": "remove index",
                 "input_map": {
                     "input_csv": "csv_file"
                 }
             },
-            {
-                "id": "03",
+            "2": {
                 "worker": {
-                    "id": "004894dc-bb03-4649-92c4-6b184c30c594",
-                    "name": "Split on unique",
-                    "description": null,
-                    "image": "split-on-unique-worker",
+                    "name": "Split CSV",
+                    "image": "platonam/lopco-split-csv-worker:dev",
                     "data_cache_path": "/data_cache",
+                    "description": "Split a Comma-Separated Values file into multiple unique files.",
+                    "configs": {
+                        "column": "sensor",
+                        "delimiter": ";"
+                    },
                     "input": {
                         "type": "single",
                         "fields": [
@@ -124,28 +136,37 @@ _Add new pipeline._
                                 "name": "result_table",
                                 "media_type": "text/csv",
                                 "is_file": true
+                            },
+                            {
+                                "name": "line_count",
+                                "media_type": "text/plain",
+                                "is_file": false
                             }
                         ]
                     },
-                    "configs": {
-                        "column": "sensor",
-                        "delimiter": ";"
-                    }
+                    "id": "004894dc-bb03-4649-92c4-6b184c30c594"
                 },
+                "description": "",
                 "input_map": {
                     "source_table": "output_csv"
                 }
             },
-            {
-                "id": "04",
+            "3": {
                 "worker": {
-                    "id": "9a84f6ad-2ba6-49b3-b931-b7629c34be9c",
-                    "name": "Upload to platform",
-                    "description": null,
-                    "image": "platform-upload-worker",
+                    "name": "Upload CSV to platform",
+                    "image": "platonam/lopco-upload-csv-worker:dev",
                     "data_cache_path": "/data_cache",
+                    "description": "MQTT upload worker.",
+                    "configs": {
+                        "usr": "user",
+                        "pw": "password",
+                        "mqtt_server": "mqtt.host.com",
+                        "mqtt_port": "1883",
+                        "mqtt_keepalive": "15",
+                        "delimiter": ";"
+                    },
                     "input": {
-                        "type": "single",
+                        "type": "multiple",
                         "fields": [
                             {
                                 "name": "service_id",
@@ -153,31 +174,42 @@ _Add new pipeline._
                                 "is_file": false
                             },
                             {
-                                "name": "source_table",
+                                "name": "source_file",
                                 "media_type": "text/csv",
                                 "is_file": true
                             }
                         ]
                     },
-                    "output": null,
-                    "configs": {
-                        "user": "test_user",
-                        "password": "test_pw",
-                        "machine_id": "735d39eb6dc94acdadc9d019ff54fb1f"
-                    }
+                    "output": {
+                        "type": "multiple",
+                        "fields": [
+                            {
+                                "name": "service_id",
+                                "media_type": "text/plain",
+                                "is_file": true
+                            },
+                            {
+                                "name": "sent_messages",
+                                "media_type": "text/plain",
+                                "is_file": false
+                            }
+                        ]
+                    },
+                    "id": "9a84f6ad-2ba6-49b3-b931-b7629c34be9c"
                 },
+                "description": "",
                 "input_map": {
                     "service_id": "unique_id",
-                    "source_table": "result_table"
+                    "source_file": "result_table"
                 }
             }
-        ]
+        }
     }
 
     curl \
     -d @pipeline_data.json \
     -H 'Content-Type: application/json' \
-    -X POST http://host:8000/pipeline-registry/pipelines
+    -X POST http://<host>/pipelines
     {
         "resource": "a34f4ba9-13ad-4ab5-a7e8-d23157513466"
     }
@@ -192,18 +224,103 @@ _Retrieve pipeline data._
 
     # Example
 
-    curl http://host:8000/pipeline-registry/pipelines/783c1c1f-7680-4420-8a0c-9e00752ee22b
+    curl http://<host>/pipelines/a34f4ba9-13ad-4ab5-a7e8-d23157513466
     {
-        "name": "Test Pipeline",
-        "stages": [
-            {
-                "id": "01",
+        "name": "Demo Pipeline",
+        "stages": {
+            "0": {
                 "worker": {
-                    "id": "004894dc-bb03-4649-92c4-6b184c30c594",
-                    "name": "Split on unique",
-                    "description": null,
-                    "image": "split-on-unique-worker",
+                    "name": "XLSX to CSV",
+                    "image": "platonam/lopco-xlsx-to-csv-worker:dev",
                     "data_cache_path": "/data_cache",
+                    "description": "Convert a Microsoft Excel Open XML Spreadsheet file to Comma-Separated Values.",
+                    "configs": {
+                        "delimiter": ";"
+                    },
+                    "input": {
+                        "type": "single",
+                        "fields": [
+                            {
+                                "name": "xlsx_file",
+                                "media_type": "application/vnd.ms-excel",
+                                "is_file": true
+                            }
+                        ]
+                    },
+                    "output": {
+                        "type": "single",
+                        "fields": [
+                            {
+                                "name": "csv_file",
+                                "media_type": "text/csv",
+                                "is_file": true
+                            },
+                            {
+                                "name": "line_count",
+                                "media_type": "text/plain",
+                                "is_file": false
+                            }
+                        ]
+                    },
+                    "id": "1567e155-51c6-4f0b-a898-842c737f1b34"
+                },
+                "description": "",
+                "input_map": {
+                    "xlsx_file": "init_source"
+                }
+            },
+            "1": {
+                "worker": {
+                    "name": "Trim CSV",
+                    "image": "platonam/lopco-trim-csv-worker:dev",
+                    "data_cache_path": "/data_cache",
+                    "description": "Trim a column from a Comma-Separated Values file.",
+                    "configs": {
+                        "delimiter": ";",
+                        "column_num": "2"
+                    },
+                    "input": {
+                        "type": "single",
+                        "fields": [
+                            {
+                                "name": "input_csv",
+                                "media_type": "text/csv",
+                                "is_file": true
+                            }
+                        ]
+                    },
+                    "output": {
+                        "type": "single",
+                        "fields": [
+                            {
+                                "name": "output_csv",
+                                "media_type": "text/csv",
+                                "is_file": true
+                            },
+                            {
+                                "name": "line_count",
+                                "media_type": "text/plain",
+                                "is_file": false
+                            }
+                        ]
+                    },
+                    "id": "04e6b617-fff1-41bb-a50c-8c2a2c0413e5"
+                },
+                "description": "remove index",
+                "input_map": {
+                    "input_csv": "csv_file"
+                }
+            },
+            "2": {
+                "worker": {
+                    "name": "Split CSV",
+                    "image": "platonam/lopco-split-csv-worker:dev",
+                    "data_cache_path": "/data_cache",
+                    "description": "Split a Comma-Separated Values file into multiple unique files.",
+                    "configs": {
+                        "column": "sensor",
+                        "delimiter": ";"
+                    },
                     "input": {
                         "type": "single",
                         "fields": [
@@ -226,28 +343,37 @@ _Retrieve pipeline data._
                                 "name": "result_table",
                                 "media_type": "text/csv",
                                 "is_file": true
+                            },
+                            {
+                                "name": "line_count",
+                                "media_type": "text/plain",
+                                "is_file": false
                             }
                         ]
                     },
-                    "configs": {
-                        "column": "sensor",
-                        "delimiter": ";"
-                    }
+                    "id": "004894dc-bb03-4649-92c4-6b184c30c594"
                 },
+                "description": "",
                 "input_map": {
-                    "source_table": "init_source"
+                    "source_table": "output_csv"
                 }
             },
-            {
-                "id": "02",
+            "3": {
                 "worker": {
-                    "id": "9a84f6ad-2ba6-49b3-b931-b7629c34be9c",
-                    "name": "Upload to platform",
-                    "description": null,
-                    "image": "platform-upload-worker",
+                    "name": "Upload CSV to platform",
+                    "image": "platonam/lopco-upload-csv-worker:dev",
                     "data_cache_path": "/data_cache",
+                    "description": "MQTT upload worker.",
+                    "configs": {
+                        "usr": "user",
+                        "pw": "password",
+                        "mqtt_server": "mqtt.host.com",
+                        "mqtt_port": "1883",
+                        "mqtt_keepalive": "15",
+                        "delimiter": ";"
+                    },
                     "input": {
-                        "type": "single",
+                        "type": "multiple",
                         "fields": [
                             {
                                 "name": "service_id",
@@ -255,25 +381,36 @@ _Retrieve pipeline data._
                                 "is_file": false
                             },
                             {
-                                "name": "source_table",
+                                "name": "source_file",
                                 "media_type": "text/csv",
                                 "is_file": true
                             }
                         ]
                     },
-                    "output": null,
-                    "configs": {
-                        "user": "test_user",
-                        "password": "test_pw",
-                        "machine_id": "3f2c8eccc5064346b97b70785c95a729"
-                    }
+                    "output": {
+                        "type": "multiple",
+                        "fields": [
+                            {
+                                "name": "service_id",
+                                "media_type": "text/plain",
+                                "is_file": true
+                            },
+                            {
+                                "name": "sent_messages",
+                                "media_type": "text/plain",
+                                "is_file": false
+                            }
+                        ]
+                    },
+                    "id": "9a84f6ad-2ba6-49b3-b931-b7629c34be9c"
                 },
+                "description": "",
                 "input_map": {
                     "service_id": "unique_id",
-                    "source_table": "result_table"
+                    "source_file": "result_table"
                 }
             }
-        ]
+        }
     }
 
 
@@ -285,16 +422,101 @@ _Update a pipeline._
 
     cat pipeline_data.json
     {
-        "name": "Test Pipeline",
-        "stages": [
-            {
-                "id": "01",
+        "name": "Demo Pipeline",
+        "stages": {
+            "0": {
                 "worker": {
-                    "id": "004894dc-bb03-4649-92c4-6b184c30c594",
-                    "name": "Split on unique",
-                    "description": null,
-                    "image": "split-on-unique-worker",
+                    "name": "XLSX to CSV",
+                    "image": "platonam/lopco-xlsx-to-csv-worker:dev",
                     "data_cache_path": "/data_cache",
+                    "description": "Convert a Microsoft Excel Open XML Spreadsheet file to Comma-Separated Values.",
+                    "configs": {
+                        "delimiter": ";"
+                    },
+                    "input": {
+                        "type": "single",
+                        "fields": [
+                            {
+                                "name": "xlsx_file",
+                                "media_type": "application/vnd.ms-excel",
+                                "is_file": true
+                            }
+                        ]
+                    },
+                    "output": {
+                        "type": "single",
+                        "fields": [
+                            {
+                                "name": "csv_file",
+                                "media_type": "text/csv",
+                                "is_file": true
+                            },
+                            {
+                                "name": "line_count",
+                                "media_type": "text/plain",
+                                "is_file": false
+                            }
+                        ]
+                    },
+                    "id": "1567e155-51c6-4f0b-a898-842c737f1b34"
+                },
+                "description": "",
+                "input_map": {
+                    "xlsx_file": "init_source"
+                }
+            },
+            "1": {
+                "worker": {
+                    "name": "Trim CSV",
+                    "image": "platonam/lopco-trim-csv-worker:dev",
+                    "data_cache_path": "/data_cache",
+                    "description": "Trim a column from a Comma-Separated Values file.",
+                    "configs": {
+                        "delimiter": ";",
+                        "column_num": "2"
+                    },
+                    "input": {
+                        "type": "single",
+                        "fields": [
+                            {
+                                "name": "input_csv",
+                                "media_type": "text/csv",
+                                "is_file": true
+                            }
+                        ]
+                    },
+                    "output": {
+                        "type": "single",
+                        "fields": [
+                            {
+                                "name": "output_csv",
+                                "media_type": "text/csv",
+                                "is_file": true
+                            },
+                            {
+                                "name": "line_count",
+                                "media_type": "text/plain",
+                                "is_file": false
+                            }
+                        ]
+                    },
+                    "id": "04e6b617-fff1-41bb-a50c-8c2a2c0413e5"
+                },
+                "description": "remove index",
+                "input_map": {
+                    "input_csv": "csv_file"
+                }
+            },
+            "2": {
+                "worker": {
+                    "name": "Split CSV",
+                    "image": "platonam/lopco-split-csv-worker:dev",
+                    "data_cache_path": "/data_cache",
+                    "description": "Split a Comma-Separated Values file into multiple unique files.",
+                    "configs": {
+                        "column": "sensor",
+                        "delimiter": ";"
+                    },
                     "input": {
                         "type": "single",
                         "fields": [
@@ -317,28 +539,37 @@ _Update a pipeline._
                                 "name": "result_table",
                                 "media_type": "text/csv",
                                 "is_file": true
+                            },
+                            {
+                                "name": "line_count",
+                                "media_type": "text/plain",
+                                "is_file": false
                             }
                         ]
                     },
-                    "configs": {
-                        "column": "sensor",
-                        "delimiter": ";"
-                    }
+                    "id": "004894dc-bb03-4649-92c4-6b184c30c594"
                 },
+                "description": "",
                 "input_map": {
-                    "source_table": "init_source"
+                    "source_table": "output_csv"
                 }
             },
-            {
-                "id": "02",
+            "3": {
                 "worker": {
-                    "id": "9a84f6ad-2ba6-49b3-b931-b7629c34be9c",
-                    "name": "Upload to platform",
-                    "description": null,
-                    "image": "platform-upload-worker",
+                    "name": "Upload CSV to platform",
+                    "image": "platonam/lopco-upload-csv-worker:dev",
                     "data_cache_path": "/data_cache",
+                    "description": "MQTT upload worker.",
+                    "configs": {
+                        "usr": "user",
+                        "pw": "password",
+                        "mqtt_server": "mqtt.host.com",
+                        "mqtt_port": "1883",
+                        "mqtt_keepalive": "15",
+                        "delimiter": ";"
+                    },
                     "input": {
-                        "type": "single",
+                        "type": "multiple",
                         "fields": [
                             {
                                 "name": "service_id",
@@ -346,31 +577,42 @@ _Update a pipeline._
                                 "is_file": false
                             },
                             {
-                                "name": "source_table",
+                                "name": "source_file",
                                 "media_type": "text/csv",
                                 "is_file": true
                             }
                         ]
                     },
-                    "output": null,
-                    "configs": {
-                        "user": "user_a",
-                        "password": "1234",
-                        "machine_id": "3f2c8eccc5064346b97b70785c95a729"
-                    }
+                    "output": {
+                        "type": "multiple",
+                        "fields": [
+                            {
+                                "name": "service_id",
+                                "media_type": "text/plain",
+                                "is_file": true
+                            },
+                            {
+                                "name": "sent_messages",
+                                "media_type": "text/plain",
+                                "is_file": false
+                            }
+                        ]
+                    },
+                    "id": "9a84f6ad-2ba6-49b3-b931-b7629c34be9c"
                 },
+                "description": "",
                 "input_map": {
                     "service_id": "unique_id",
-                    "source_table": "result_table"
+                    "source_file": "result_table"
                 }
             }
-        ]
+        }
     }
 
     curl \
-    -d @machine_data.json \
+    -d @pipeline_data.json \
     -H 'Content-Type: application/json' \
-    -X PUT http://host:8000/pipeline-registry/pipelines/783c1c1f-7680-4420-8a0c-9e00752ee22b
+    -X PUT http://<host>/pipelines/a34f4ba9-13ad-4ab5-a7e8-d23157513466
 
 **DELETE**
 
@@ -378,4 +620,4 @@ _Remove a pipeline_
 
     # Example
 
-    curl -X DELETE http://host:8000/pipeline-registry/pipelines/783c1c1f-7680-4420-8a0c-9e00752ee22b
+    curl -X DELETE http://<host>/pipelines/a34f4ba9-13ad-4ab5-a7e8-d23157513466
